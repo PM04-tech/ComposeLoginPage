@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.composeloginpage.viewModel.LoginViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -34,13 +36,9 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun LoginScreen() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
+fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
+    val state by viewModel.uiState.collectAsState()
 
-    val isEmailValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    val isPasswordValid = password.length >= 6
 
     Column(
         modifier = Modifier
@@ -50,16 +48,16 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(100.dp))
-        Text("Login", style = MaterialTheme.typography.displayMedium)
+        Text("Login", style = MaterialTheme.typography.displaySmall)
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // Email Field
         CustomTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = state.email,
+            onValueChange = { viewModel.onEmailChange(it) },
             label = "Email",
-            isError = email.isNotEmpty() && !isEmailValid,
+            isError = state.email.isNotEmpty() && !state.isEmailValid,
             errorMessage = "Invalid email format"
         )
 
@@ -67,11 +65,11 @@ fun LoginScreen() {
 
         // Password Field
         CustomTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = state.password,
+            onValueChange = { viewModel.onPasswordChange(it) },
             label = "Password",
             isPassword = true,
-            isError = password.isNotEmpty() && !isPasswordValid,
+            isError = state.password.isNotEmpty() && !state.isPasswordValid,
             errorMessage = "Password must be at least 6 characters"
         )
 
@@ -79,37 +77,29 @@ fun LoginScreen() {
 
         Button(
             onClick = {
-                message = if (isEmailValid && isPasswordValid) {
-                    "Login Successful ✅"
-                } else {
-                    "Please fix errors before login"
-                }
+              viewModel.onLoginClick()
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = isEmailValid && isPasswordValid
+            enabled = !state.isLoading
         ) {
-            Text("Login")
+            Text(if(state.isLoading) "Logging in..." else "Login")
         }
 
-        if (message.isNotEmpty()) {
+        state.message?.let {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                message,
-                color = if (message.contains("Successful")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-            )
+                text = it,
+                color = if(state.isLoginSuccessful)
+                        MaterialTheme.colorScheme.primary
+                       else
+                        MaterialTheme.colorScheme.error
+                      )
+
         }
     }
 }
 
 
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable

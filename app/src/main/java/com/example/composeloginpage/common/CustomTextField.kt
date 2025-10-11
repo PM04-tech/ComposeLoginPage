@@ -63,7 +63,7 @@ fun CustomTextField(
             Text(
                 text = errorMessage,
                 color = Color.Red,
-                style = MaterialTheme.typography.displaySmall,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
         }
