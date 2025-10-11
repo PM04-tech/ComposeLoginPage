@@ -85,3 +85,11 @@ Regex-based email validation ✉️✅
 ✅ onLoginClick() → success & failure login scenarios
 
 ✅ _eventFlow → emits LoginError for invalid credentials
+
+
+<img width="720" height="1650" alt="3" src="https://github.com/user-attachments/assets/d7860d19-5247-4c4d-a18f-37728da9aa26" />
+<img width="720" height="1650" alt="2" src="https://github.com/user-attachments/assets/9896245d-005f-4407-a3eb-6d4c75ac9f8f" />
+<img width="720" height="1650" alt="1" src="https://github.com/user-attachments/assets/b9ae6df2-7310-4d67-b08e-1ee865ccb44e" />
+
+
+
