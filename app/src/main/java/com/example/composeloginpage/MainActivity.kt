@@ -1,6 +1,7 @@
 package com.example.composeloginpage
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,8 +17,10 @@ import com.example.composeloginpage.ui.theme.ComposeLoginPageTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.composeloginpage.viewModel.LoginEvent
 import com.example.composeloginpage.viewModel.LoginViewModel
 
 
@@ -38,7 +41,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is LoginEvent.LoginSuccess -> {
+                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                }
 
+                is LoginEvent.LoginError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier

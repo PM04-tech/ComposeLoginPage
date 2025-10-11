@@ -3,15 +3,28 @@ package com.example.composeloginpage.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
+sealed class LoginEvent {
+    object LoginSuccess : LoginEvent()
+    data class LoginError(val message: String) : LoginEvent()
+}
+
 class LoginViewModel: ViewModel() {
+    //Use StateFlow for state that UI always cares about.
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
+
+   // Use SharedFlow for events that should happen only once.
+    // SharedFlow → one-time events (messages, navigation)
+    private val _eventFlow = MutableSharedFlow<LoginEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     fun onEmailChange(newEmail: String) {
         _uiState.value = _uiState.value.copy(
@@ -30,7 +43,9 @@ class LoginViewModel: ViewModel() {
     fun onLoginClick(){
         val currentUiState = _uiState.value
         if(!currentUiState.isEmailValid || !currentUiState.isPasswordValid){
-            _uiState.value = currentUiState.copy(message = "Please fix errors before login")
+            viewModelScope.launch {
+                _eventFlow.emit(LoginEvent.LoginError("Invalid email or password"))
+            }
             return
         }
 
