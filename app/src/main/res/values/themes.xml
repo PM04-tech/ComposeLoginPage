@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.ComposeLoginPage" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ComposeLoginPage" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Set background color for the launch window -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>
